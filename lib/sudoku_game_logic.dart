@@ -248,10 +248,12 @@ class SudokuGameLogic {
         faults++;
       } else {
         // Update remaining numbers count
-        if (previousNumber != 0) {
+        if (number == solution[row][col]) {
+          remainingNumbers[number] = remainingNumbers[number]! - 1;
+        }
+        if (previousNumber != 0 && previousNumber == solution[row][col]) {
           remainingNumbers[previousNumber] = remainingNumbers[previousNumber]! + 1;
         }
-        remainingNumbers[number] = remainingNumbers[number]! - 1;
         
         // If the move was valid, update notes
         updateNotesAfterMove(row, col, number);
@@ -262,7 +264,7 @@ class SudokuGameLogic {
   void clearCell(int row, int col) {
     if (canEditCell(row, col)) {
       int previousNumber = grid[row][col];
-      if (previousNumber != 0) {
+      if (previousNumber != 0 && previousNumber == solution[row][col]) {
         remainingNumbers[previousNumber] = remainingNumbers[previousNumber]! + 1;
       }
       grid[row][col] = 0;
@@ -549,16 +551,16 @@ class SudokuGameLogic {
 
   // Update the count of remaining numbers
   void _updateRemainingNumbers() {
-    // Initialize counts for each number (1-9)
+    // Initialize counts for each number based on solution grid
     remainingNumbers = {
-      for (int i = 1; i <= 9; i++) i: 9
+      for (int i = 1; i <= 9; i++) i: 0
     };
 
-    // Count numbers in the grid
+    // Count how many numbers are still needed based on solution
     for (int i = 0; i < 9; i++) {
       for (int j = 0; j < 9; j++) {
-        if (grid[i][j] != 0) {
-          remainingNumbers[grid[i][j]] = remainingNumbers[grid[i][j]]! - 1;
+        if (grid[i][j] != solution[i][j]) {
+          remainingNumbers[solution[i][j]] = remainingNumbers[solution[i][j]]! + 1;
         }
       }
     }

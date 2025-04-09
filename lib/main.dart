@@ -280,7 +280,7 @@ class _SudokuGameState extends State<SudokuGame> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).shadowColor.withOpacity(0.1),
+              color: Theme.of(context).shadowColor.withAlpha(10),
               blurRadius: 8,
               offset: const Offset(0, -4),
             ),
@@ -413,7 +413,7 @@ class _SudokuGameState extends State<SudokuGame> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
         elevation: 0,
@@ -468,7 +468,7 @@ class _SudokuGameState extends State<SudokuGame> {
               Icons.lightbulb_outline,
               color: gameLogic.hintsRemaining > 0 && !isGameOver 
                   ? theme.colorScheme.onSurface 
-                  : theme.colorScheme.onSurface.withOpacity(0.38),
+                  : theme.colorScheme.onSurface.withAlpha(97),
             ),
             onPressed: gameLogic.hintsRemaining > 0 && !isGameOver && !isPaused
                 ? _handleHintRequest
@@ -495,7 +495,7 @@ class _SudokuGameState extends State<SudokuGame> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: theme.shadowColor.withOpacity(0.1),
+                      color: theme.shadowColor.withAlpha(10),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -555,7 +555,7 @@ class _SudokuGameState extends State<SudokuGame> {
                                 color: theme.colorScheme.surface,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: theme.shadowColor.withOpacity(0.1),
+                                    color: theme.shadowColor.withAlpha(10),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
                                   ),
@@ -619,7 +619,7 @@ class _SudokuGameState extends State<SudokuGame> {
             GestureDetector(
               onTap: _togglePause,
               child: Container(
-                color: theme.colorScheme.surface.withOpacity(0.95),
+                color: theme.colorScheme.surface.withAlpha(95),
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -681,7 +681,7 @@ class _SudokuGameState extends State<SudokuGame> {
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.7),
+            color: theme.colorScheme.onSurface.withAlpha(70),
           ),
         ),
         const SizedBox(height: 2),
@@ -718,19 +718,19 @@ class _SudokuGameState extends State<SudokuGame> {
           border: Border(
             right: BorderSide(
               width: (col % 3 == 2 && col != 8) ? 2.0 : 0.5,
-              color: theme.colorScheme.outline.withOpacity(0.5),
+              color: theme.colorScheme.outline.withAlpha(50),
             ),
             bottom: BorderSide(
               width: (row % 3 == 2 && row != 8) ? 2.0 : 0.5,
-              color: theme.colorScheme.outline.withOpacity(0.5),
+              color: theme.colorScheme.outline.withAlpha(50),
             ),
             left: BorderSide(
               width: col == 0 ? 2.0 : 0,
-              color: theme.colorScheme.outline.withOpacity(0.5),
+              color: theme.colorScheme.outline.withAlpha(50),
             ),
             top: BorderSide(
               width: row == 0 ? 2.0 : 0,
-              color: theme.colorScheme.outline.withOpacity(0.5),
+              color: theme.colorScheme.outline.withAlpha(50),
             ),
           ),
           color: _getCellColor(row, col, isSelected, hasError),
@@ -771,7 +771,7 @@ class _SudokuGameState extends State<SudokuGame> {
                                     minHeight: 12,
                                   ),
                                   decoration: isHighlighted ? BoxDecoration(
-                                    color: theme.colorScheme.primary.withOpacity(0.1),
+                                    color: theme.colorScheme.primary.withAlpha(10),
                                     borderRadius: BorderRadius.circular(2),
                                   ) : null,
                                   padding: const EdgeInsets.all(1),
@@ -781,7 +781,7 @@ class _SudokuGameState extends State<SudokuGame> {
                                       fontSize: 9,
                                       color: isHighlighted
                                           ? theme.colorScheme.primary
-                                          : theme.colorScheme.onSurface.withOpacity(0.5),
+                                          : theme.colorScheme.onSurface.withAlpha(50),
                                       fontWeight: isHighlighted 
                                           ? FontWeight.bold 
                                           : FontWeight.normal,
@@ -805,21 +805,21 @@ class _SudokuGameState extends State<SudokuGame> {
         null;
 
     if (hasError) {
-      return theme.colorScheme.error.withOpacity(0.15);
+      return theme.colorScheme.error.withAlpha(15);
     }
     if (isSelected) {
-      return theme.colorScheme.primary.withOpacity(0.25);
+      return theme.colorScheme.primary.withAlpha(25);
     }
     if (selectedNumber != null && selectedNumber != 0 && number == selectedNumber) {
-      return theme.colorScheme.primary.withOpacity(0.15);
+      return theme.colorScheme.primary.withAlpha(15);
     }
     if (gameLogic.relatedCells[row][col]) {
-      return theme.colorScheme.secondary.withOpacity(0.15);
+      return theme.colorScheme.secondary.withAlpha(15);
     }
     final blockRow = row ~/ 3;
     final blockCol = col ~/ 3;
     return (blockRow + blockCol) % 2 == 0
-        ? theme.colorScheme.surfaceVariant.withOpacity(0.4)
+        ? theme.colorScheme.surfaceContainerHighest.withAlpha(40)
         : theme.colorScheme.surface;
   }
 
@@ -856,7 +856,7 @@ class _SudokuGameState extends State<SudokuGame> {
                   },
             style: FilledButton.styleFrom(
               backgroundColor: isNoteMode 
-                  ? theme.colorScheme.surfaceVariant 
+                  ? theme.colorScheme.surfaceContainerHighest 
                   : theme.colorScheme.primary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
