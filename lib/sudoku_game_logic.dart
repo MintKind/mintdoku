@@ -575,4 +575,32 @@ class SudokuGameLogic {
   bool isNumberComplete(int number) {
     return remainingNumbers[number] == 0;
   }
+
+  // Serialize game state to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'grid': grid,
+      'fixedNumbers': fixedNumbers,
+      'solution': solution,
+      'notes': notes.map((row) => row.map((cell) => cell.toList()).toList()).toList(),
+      'difficulty': difficulty.index,
+      'faults': faults,
+      'hintsRemaining': hintsRemaining,
+    };
+  }
+
+  // Create instance from JSON
+  factory SudokuGameLogic.fromJson(Map<String, dynamic> json) {
+    final instance = SudokuGameLogic(difficulty: Difficulty.values[json['difficulty'] as int]);
+    instance.grid = (json['grid'] as List).map((row) => List<int>.from(row)).toList();
+    instance.fixedNumbers = (json['fixedNumbers'] as List).map((row) => List<bool>.from(row)).toList();
+    instance.solution = (json['solution'] as List).map((row) => List<int>.from(row)).toList();
+    instance.notes = (json['notes'] as List).map((row) => 
+      (row as List).map((cell) => Set<int>.from(cell as List)).toList()
+    ).toList();
+    instance.faults = json['faults'] as int;
+    instance.hintsRemaining = json['hintsRemaining'] as int;
+    instance._updateRemainingNumbers();
+    return instance;
+  }
 } 

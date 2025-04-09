@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'sudoku_game_logic.dart';
+import 'dart:convert';
+import 'dart:html' as html;
 
 void main() {
   runApp(const MainApp());
@@ -48,6 +50,7 @@ class SudokuGame extends StatefulWidget {
 }
 
 class _SudokuGameState extends State<SudokuGame> {
+  static const String storageKey = 'sudoku_game_state';
   late SudokuGameLogic gameLogic;
   int? selectedRow;
   int? selectedCol;
@@ -61,13 +64,43 @@ class _SudokuGameState extends State<SudokuGame> {
   @override
   void initState() {
     super.initState();
-    gameLogic = SudokuGameLogic(difficulty: Difficulty.medium);
+    _loadGameState();
     startTimer();
+  }
+
+  void _saveGameState() {
+    final gameState = {
+      'gameLogic': gameLogic.toJson(),
+      'secondsElapsed': secondsElapsed,
+      'isGameComplete': isGameComplete,
+      'isGameOver': isGameOver,
+      'isPaused': isPaused,
+    };
+    html.window.localStorage[storageKey] = jsonEncode(gameState);
+  }
+
+  void _loadGameState() {
+    final savedState = html.window.localStorage[storageKey];
+    if (savedState != null) {
+      try {
+        final gameState = jsonDecode(savedState) as Map<String, dynamic>;
+        gameLogic = SudokuGameLogic.fromJson(gameState['gameLogic'] as Map<String, dynamic>);
+        secondsElapsed = gameState['secondsElapsed'] as int;
+        isGameComplete = gameState['isGameComplete'] as bool;
+        isGameOver = gameState['isGameOver'] as bool;
+        isPaused = gameState['isPaused'] as bool;
+      } catch (e) {
+        gameLogic = SudokuGameLogic(difficulty: Difficulty.medium);
+      }
+    } else {
+      gameLogic = SudokuGameLogic(difficulty: Difficulty.medium);
+    }
   }
 
   @override
   void dispose() {
     timer.cancel();
+    _saveGameState();
     super.dispose();
   }
 
@@ -166,6 +199,7 @@ class _SudokuGameState extends State<SudokuGame> {
           timer.cancel();
           _showCompletionDialog();
         }
+        _saveGameState();
       });
     }
   }
@@ -179,6 +213,7 @@ class _SudokuGameState extends State<SudokuGame> {
       setState(() {
         gameLogic.clearCell(selectedRow!, selectedCol!);
         gameLogic.updateRelatedCells(selectedRow, selectedCol);
+        _saveGameState();
       });
     }
   }
@@ -907,6 +942,7 @@ class _SudokuGameState extends State<SudokuGame> {
       } else {
         startTimer();
       }
+      _saveGameState();
     });
   }
 
@@ -923,6 +959,7 @@ class _SudokuGameState extends State<SudokuGame> {
       selectedCol = null;
       timer.cancel();
       startTimer();
+      _saveGameState();
     });
   }
 }
