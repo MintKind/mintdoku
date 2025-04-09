@@ -148,7 +148,12 @@ class _SudokuGameState extends State<SudokuGame> {
   }
 
   void inputNumber(int number) {
-    if (selectedRow != null && selectedCol != null && !isGameOver) {
+    if (selectedRow != null && 
+        selectedCol != null && 
+        !isGameOver && 
+        !gameLogic.fixedNumbers[selectedRow!][selectedCol!] &&
+        !(gameLogic.grid[selectedRow!][selectedCol!] != 0 && 
+          gameLogic.grid[selectedRow!][selectedCol!] == gameLogic.solution[selectedRow!][selectedCol!])) {
       setState(() {
         gameLogic.setCell(selectedRow!, selectedCol!, number);
         gameLogic.updateRelatedCells(selectedRow, selectedCol);
@@ -166,7 +171,11 @@ class _SudokuGameState extends State<SudokuGame> {
   }
 
   void clearCell() {
-    if (selectedRow != null && selectedCol != null) {
+    if (selectedRow != null && 
+        selectedCol != null && 
+        !gameLogic.fixedNumbers[selectedRow!][selectedCol!] &&
+        !(gameLogic.grid[selectedRow!][selectedCol!] != 0 && 
+          gameLogic.grid[selectedRow!][selectedCol!] == gameLogic.solution[selectedRow!][selectedCol!])) {
       setState(() {
         gameLogic.clearCell(selectedRow!, selectedCol!);
         gameLogic.updateRelatedCells(selectedRow, selectedCol);
@@ -681,7 +690,11 @@ class _SudokuGameState extends State<SudokuGame> {
   Widget _buildCell(int row, int col) {
     final theme = Theme.of(context);
     final isSelected = row == selectedRow && col == selectedCol;
-    final isFixed = gameLogic.fixedNumbers[row][col];
+    final isOriginalFixed = gameLogic.fixedNumbers[row][col];
+    final isCorrectUserInput = !isOriginalFixed && 
+        gameLogic.grid[row][col] != 0 && 
+        gameLogic.grid[row][col] == gameLogic.solution[row][col];
+    final isFixed = isOriginalFixed || isCorrectUserInput;
     final hasError = gameLogic.errorCells[row][col];
     final number = gameLogic.grid[row][col];
     final notes = gameLogic.notes[row][col];
@@ -711,8 +724,8 @@ class _SudokuGameState extends State<SudokuGame> {
                   number.toString(),
                   style: TextStyle(
                     fontSize: 24,
-                    color: isFixed 
-                        ? theme.colorScheme.onSurface 
+                    color: isOriginalFixed 
+                        ? theme.colorScheme.onSurface
                         : theme.colorScheme.primary,
                     fontWeight: isFixed ? FontWeight.bold : FontWeight.normal,
                   ),
