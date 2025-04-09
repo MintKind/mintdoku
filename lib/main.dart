@@ -532,74 +532,83 @@ class _SudokuGameState extends State<SudokuGame> {
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(
-                      maxWidth: 600, // Maximum width for larger screens
+                      maxWidth: 600,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Sudoku Board
-                        AspectRatio(
-                          aspectRatio: 1,
-                          child: Container(
-                            margin: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: theme.colorScheme.outline,
-                                width: 2,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Sudoku Board
+                          AspectRatio(
+                            aspectRatio: 1,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: 8.0,
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: theme.shadowColor.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: theme.colorScheme.outline,
+                                  width: 2,
                                 ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(14),
-                              child: GridView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 9,
-                                  childAspectRatio: 1.0,
-                                ),
-                                itemCount: 81,
-                                itemBuilder: (context, index) {
-                                  final row = index ~/ 9;
-                                  final col = index % 9;
-                                  return _buildCell(row, col);
-                                },
+                                color: theme.colorScheme.surface,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: theme.shadowColor.withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: Column(
+                                children: List.generate(9, (row) {
+                                  return Expanded(
+                                    child: Row(
+                                      children: List.generate(9, (col) {
+                                        return Expanded(
+                                          child: _buildCell(row, col),
+                                        );
+                                      }),
+                                    ),
+                                  );
+                                }),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-                        // Number Pad
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            maxWidth: 400, // Maximum width for the number pad
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Wrap(
-                              spacing: 8.0,
-                              runSpacing: 8.0,
-                              alignment: WrapAlignment.center,
-                              children: List.generate(9, (index) => _buildNumberButton(index + 1)),
+                          const SizedBox(height: 16),
+                          // Number Pad
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: 400,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Wrap(
+                                    spacing: 8.0,
+                                    runSpacing: 8.0,
+                                    alignment: WrapAlignment.center,
+                                    children: List.generate(9, (index) => _buildNumberButton(index + 1)),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  SizedBox(
+                                    width: 200,
+                                    child: FilledButton.tonal(
+                                      onPressed: isGameOver ? null : clearCell,
+                                      child: const Text('Clear'),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: 200, // Fixed width for the clear button
-                          child: FilledButton.tonal(
-                            onPressed: isGameOver ? null : clearCell,
-                            child: const Text('Clear'),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -713,6 +722,14 @@ class _SudokuGameState extends State<SudokuGame> {
             ),
             bottom: BorderSide(
               width: (row % 3 == 2 && row != 8) ? 2.0 : 0.5,
+              color: theme.colorScheme.outline.withOpacity(0.5),
+            ),
+            left: BorderSide(
+              width: col == 0 ? 2.0 : 0,
+              color: theme.colorScheme.outline.withOpacity(0.5),
+            ),
+            top: BorderSide(
+              width: row == 0 ? 2.0 : 0,
               color: theme.colorScheme.outline.withOpacity(0.5),
             ),
           ),
